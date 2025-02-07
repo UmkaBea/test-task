@@ -6,56 +6,47 @@ use Illuminate\Http\Request;
 use App\Models\Student;
 use App\Models\Subject;
 use App\Models\SchoolClass;
+use App\Http\Requests\CreateClassRequest;
+use App\Http\Requests\CreateStudentRequest;
+use App\Http\Requests\CreateSubjectRequest;
+use App\Http\Resources\StudentResource;
+use App\Http\Resources\SchoolClassResource;
+use App\Http\Resources\SubjectResource;
 
 class SchoolController extends Controller
 {
     public function getClasses()
     {
-        return response()->json(SchoolClass::all());
+        return SchoolClassResource::collection(SchoolClass::all());
     }
 
     public function getStudents()
     {
-        return response()->json(Student::all());
+        return StudentResource::collection(Student::with('class')->get());
     }
 
     public function getStudentsByClass($classId)
     {
         $students = Student::where('class_id', $classId)->with('class')->get();
-        return response()->json($students);
+        return StudentResource::collection($students);
     }
 
-    public function createSubject(Request $request) 
+    public function createSubject(CreateSubjectRequest $request) 
     {
-        $request->validate([
-            'name' => 'required|string|unique:subjects|max:255',
-        ]);
-
         $subject = Subject::create(['name' => $request->name]);
-        return response()->json($subject, 201);
+        return new SubjectResource($subject, 201);
     }
 
-    public function createClass(Request $request) 
+    public function createClass(CreateClassRequest $request) 
     {
-        $request->validate([
-            'name' => 'required|string|unique:classes|max:255',
-        ]);
-
         $class = SchoolClass::create(['name' => $request->name]);
-        return response()->json($class, 201);
+        return new SchoolClassResource($class, 201);
     }
 
-    public function createStudent(Request $request)
+    public function createStudent(CreateStudentRequest $request)
     {
-        $request->validate([
-            'first_name' => 'required|string|max:100',
-            'last_name' => 'required|string|max:100',
-            'birth_date' => 'required|date',
-            'class_id' => 'required|exists:classes,id',
-        ]);
-
         $student = Student::create($request->all());
-        return response()->json($student, 201);
+        return new StudentResource($student, 201);
     }
 
 
