@@ -21,11 +21,12 @@ class AuthController extends Controller
             'phone' => $request->phone,
             'subject' => $request->subject,
             'password' => Hash::make($request->password),
+            'role' => 'required|in:teacher,student',
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json(['access_token' => $token, 'token_type' => 'Bearer'], 201);
+        return response()->json(['access_token' => $token, 'token_type' => 'Bearer', 'role' => $user->role], 201);
     }
 
     public function login(LoginRequest $request)
@@ -37,7 +38,7 @@ class AuthController extends Controller
         $user = Auth::user();
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json(['access_token' => $token, 'token_type' => 'Bearer']);
+        return response()->json(['access_token' => $token, 'token_type' => 'Bearer', 'role' => $user->role]);
     }
 
     public function me(Request $request)

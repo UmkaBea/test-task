@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->string('phone')->nullable();
             $table->string('subject')->nullable();
             $table->string('password');
+            $table->string('role')->default('teacher');
             $table->timestamps();
         });
     }

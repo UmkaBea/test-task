@@ -14,16 +14,25 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 });
 
-Route::get('/classes', [SchoolController::class, 'getClasses']);
-Route::get('/students', [SchoolController::class, 'getStudents']);
-Route::get('/students/{classId}', [SchoolController::class, 'getStudentsByClass']);
-Route::get('/schedules/{classId}', [ScheduleController::class, 'getScheduleForClass']);
+Route::middleware('teacher')->group(function () {
+    Route::get('/classes', [SchoolController::class, 'getClasses']);
+    Route::get('/students', [SchoolController::class, 'getStudents']);
+    Route::get('/students/{classId}', [SchoolController::class, 'getStudentsByClass']);
+    Route::get('/schedules/{classId}', [ScheduleController::class, 'getScheduleForClass']);
 
-Route::post('/subjects', [SchoolController::class, 'createSubject']);
-Route::post('/classes', [SchoolController::class, 'createClass']);
-Route::post('/students', [SchoolController::class, 'createStudent']);
-Route::post('/schedules', [ScheduleController::class, 'createSchedule']);
+    Route::post('/subjects', [SchoolController::class, 'createSubject']);
+    Route::post('/classes', [SchoolController::class, 'createClass']);
+    Route::post('/students', [SchoolController::class, 'createStudent']);
+    Route::post('/schedules', [ScheduleController::class, 'createSchedule']);
 
+    Route::post('/grades', [GradeController::class, 'giveGrade']); 
+    Route::patch('/grades/{grade}', [GradeController::class, 'update']);
+});
+
+Route::middleware('student')->group(function () {
+    Route::get('/schedule', [ScheduleController::class, 'getScheduleForClass']);
+    Route::get('/grades', [GradeController::class, 'studentGrades']);
+});
 
 
   
